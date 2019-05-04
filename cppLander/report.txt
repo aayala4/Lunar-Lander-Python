@@ -1,0 +1,101 @@
+Alex Ayala
+12/15/16
+Final Project Report
+
+From a user perspective, this program is a recreation of the classic video game, Lunar Lander. The program first loads with a menu, which tells the user the controls of the game and tells the user what
+that pressing 'p' starts a game. The rules of the game  are as follows. The ship starts with 750 units of fuel. Using the arrow keys, the user must try to navigate the ship to a safe landing spot on the
+terrain and land the ship there. If the ship crashes, the user is given 5 points but loses 100 fuel units. A crash is whenever the body or only one leg of the lander touches the terrain. A crash also
+occurs if the ship lands, but it is going too fast. A good landing is when the ship lands on the terrain (both legs touch the ground) at a slow velocity. For a good landing, the user is awarded 50 points
+times the multiplier and 50 extra fuel units. A hard landing is when the ship lands, but at a medium-slow velocity. A hard landing earns 15 points times the multiplier. There are certain landing spots
+that have multipliers underneath them. If the ship lands on one of them, the score earned for a landing is multiplied by the value displayed underneath it. The game ends when the ship runs out of fuel.
+
+From a programmer's perspective, two classes were used for this project: Terrain and Ship. I will first talk about the Terrain class. There are two float vectors x and y which store the draw point
+positions. The points stored in these vectors are the points used by gfx_line rather than every point of the terrain itself. The float vectors xm and ym store midpoint positions. The float vectors xp
+and yp store the previous draw points' positions. There is an int vector called multiplierValues which holds the values of the multipliers for multiplier spots (i.e. 2, 3, 4, 5). The int vector
+multipliersLengths hold the lengths of each multiplier spot. The multiplierIndexes int vector holds the indices of the x and y vectors where the multiplier spots are located. The int vectors xPoints
+and yPoints hold the positions of actual points of the terrain. This is different from the x and y vectors because this contains a large number of the actual points of the terrain whereas x and y
+hold some of those points (namely, the ones needed for drawing). The Terrain class has a default constructor and deconstructor. The midpoint method takes two floats, averages them, and returns the
+average. It's called midpoint because I use it to average x coordinates and y coordinates. The generate method takes 3 ints called width, height, and iteration and takes a float called displacement.
+There are also two float variables declared within the method called midx and midy. These will be used to store x and y midpoints later on. Since this method uses recursion, the base case is when
+iteration is greater than 7. Within the if statement checking for base case, the multiplierPlace and points methods are called and then a return is reached. Next, it checks if iteration is 1. If
+it is, then the x and y vectors are cleared and a seed is generated using srand and the system clock. 0 and width are then added to the x vector, and 4/5 the height is added to the y vector twice.
+This effectively stores the left and right edges of the terrain. If the iteration wasn't 1, then a for loop is entered where the x midpoints and y midpoints are calculated using the midpoint method
+and temporarily stored in midx and midy. Then, a random float between -displacement and displacement is added to midy. This is really where the random generation of points occurs and why this allows
+for such variable terrain. Then a check is made to see if midy is greater than height - 25. If it is, this sets midy to height - 25. This effectively makes it so that the terrain never goes below
+25 pixels from the bottom of the height. I do this so that the multiplier text will definitely be shown by default and not be off screen. Next, midx and midy are added to their respective midpoint
+vectors, xm and ym. This is where the for loop ends. Next, xp and yp are assigned copies of x and y respectively and x and y are emptied. Then a for loop is entered which refills x and y with the
+values within xp, yp, xm, and ym. This is done by alternating between adding values from xp and yp and adding values from xm and ym. This adding starts by adding from xp and yp and ends by adding
+the last values of xp and yp. Then xm and ym are cleared, and the generate function is called recursively with the same width and height, a displacement that is 2/3 the size of the current one,
+and the current iteration increased by 1. The draw method uses a for loop, x, y, and gfx_line to draw the terrain itself. Then, another for loop is entered which draws extra lines right above the
+multiplier spots to highlight their being multiplier spots, and the multiplier values are displayed right below their respective multiplier spots using gfx_text. The points method generates the
+actual points of the terrain. It first clears the xPoints and yPoints vectors then enters a for loop where it first calculates the slope using two of the draw points (which are stored in the x
+and y vectors). Then it assigns a variable called yPrev to y[i-1]. This is so it can build points from there. Then, a second for loop is entered where a variable called yNew is given the next y
+point's value. This next y point value is calculated using slope plus yPrev. Then, the for loop counter is stored into xPoints and yNew is stored into yPoints and yPrev is set to yNew. The xPoints
+and yPoints vectors have typcial get functions called getXPoints and getYPoints. The multipliersPlace method places multiplier spots and calculates values and lengths for them. It does this by first
+clearing the multipliersLengths, multipliersValues, and multipliersIndexes vectors. Then a variable called length is assigned a random value between 2 and 5 inclusive and a variable called place
+is assigned a random index between 0 and the 5th to last index of the vector x. This ensures that the multipliers stays within the terrain previously generated. Next, a do while is entered which
+has 3 nested for loops. These do while and for loops are used to check if placing a multiplier spot at place with a length of length will overlap with a multiplier which has already been placed. If
+it does, then new random values are generated for length and place. This continues until adding the multiplier spot will not result in overlapping. Then, a switch statement is entered for length.
+If length is 2, 5 is added to multipliersValues. If it's 3, then 4 is added. If it's 4, then 3 is added, and if it's 5, then 2 is added. This makes it so that smaller multiplier spots are worth more.
+Then, length is added to multipliersLengths, and place is added to multipliersIndexes. Then, it enters a for loop which flattens out the multiplier spot by making all the indexes of y from place to 
+length - 1 indexes after place hold the value y[place]. Finally the multiplierCheck method checks where the ship landed. It takes an int called xpos which represents the ship's x position. A for
+loop is then used to see if that position fell anywhere within the range of a multiplier. If it did, then the value of that multiplier is returned. If it wasn't within the range of any of the mul-
+tipliers, 1 is returned.
+
+Now I will talk about the Ship class. Ship has two variables, xpos and ypos, which were used to hold the current position for the ship. This was located at the center of the body of the ship. Then there
+are two variables, xVel and yVel which represented the ship's horizontal and vertical velocities respectively. There is a double called ang which is used to store the ship's current orientation. The
+variable accMode stores a value which represents the strength of the ship's thrusters with a higher value being stronger and a lower value being weaker. A variable gas is used to store the ship's
+remaining gas. Finally, there are four int vectors which store the x and y points that make up of each of the ship's legs, 4 int vectors which store the x and y points that make up each of the ship's
+feet, and 2 int vectors which store the x and y points that make up the body of the ship. There is a default constructor, deconstructor, and there is an overloaded constructor which accepts 4 variables
+for the x and y positions and velocities. There are typical set and get methods for xpos, ypos, xVel, yVel, gas, ang, and accMode. The setGas function is a little different in that if it is passed a
+value less than 0, gas is set to 0 instead. The rotate method is similar to the setAng method except it makes sure that ang stays between -PI and 0. The accelerate method takes two doubles by re-
+ference. In my program I passed it velocities. It changes the passed velocities using the original passed velocities, accMode, and ang. It also decreases gas as this is essentially the "thruster"
+method. It also makes sure that if gas is less than 0, gas is set to 0. The accelerateChange method takes an int called modifier, and accMode is changed by adding modifier to it. However, the func-
+tion also checks if accMode is greater than 8 or less than 0. If either of those is true, then accMode is set back to what it was previously. Also, if the ship is out of gas, then accMode is set to
+0. The draw function draws the ship itself using gfx_line and gfx_circle. The correct draw points are calculated using xpos, ypos, ang, and trigonometry. The drawing of the fire also uses accMode. The
+collision method returns an int and takes in two int vectors called xt and yt. For the return values, 0 indicates no collision, 1 indicates crash, and 2 indicates potentially landing (there is still the
+possibility for a crash by going too fast). Using for loops, the program first checks if any part of the body touched or went below the points on the terrain they're lined up with. If so, then 1 is
+returned for a crash. Next, in a similar way, it checks if both feet touch or go below the points on the terrain they're lined up with at the same time. If so, then 2 is returned for a potential
+landing. Finally, it checks if either of the legs touch or go below the points on the terrain they're lined up with. If so, then 1 is returned for a crash. If nothing has been returned yet after
+these checks, then 0 is returned for no collision. Finally, the hitbox method calculates and stores the positions of the points of the hitbox. To do this, first it empties all the vectors that are
+used to hold the points of the body, legs, and feet. Next, it uses a for loop to find and store the body points in the body point vectors. Similarly, a for loop is used to calculate and store all the
+leg points for both legs in the 4 leg point vectors. Finally, a for loop is used to calculate and store all the foot points for both feet into the 4 foot point vectors. Note that in drawing, the feet
+are the ends of the legs. Because of this, the feet points are an extension of the leg points.
+
+From a programmer's perspective, the main file first initializes various variables including one called "state" which is initialized to 1 and a bool called running which is initialized to true. The
+program then enters a while loop that runs while running is true. It then enters a switch statement which resembles a couple game states. The first case represents the menu state, the second represents
+the playing state, and the third case is used to quit the game. I will refer to the first two cases as menu state and playing state from now on. Within the menu state, the title of the game, a line that
+tells the user to press p to play, and the controls of the game are displayed using gfx_text. It then enters a while loop which runs while state is 1. Using gfx_event_waiting and gfx_wait, the program
+waits until either p or q is pressed to do anything. If q is pressed, state is set to three, effectively quitting the game because case 3 of the state switch case sets running to false. If p is pressed,
+then the ship, which is of type Ship,  has its gas value set to 750, the score is set to 0, and state is set to 2, leading to the playing state. At the beginning of the playing state, the ship's x and y
+positions, x and y velocities, orientation, and accMode are initialized using the set functions of ship. A bool called playing is set to true, the terrain is generated using the generate method of
+terrain, which is of type Terrain. Collided and multiplier, two ints, are set to 0 and 1 respectively. Then, the points of the terrain are stored in xTerrain and yTerrrain (which are both vectors of
+type int) using a couple of terrain's get methods. Next, the program enters a while loop which runs while playing is true. It sets the variable 'c,' which holds the value of the event returned by
+gfx_wait, to the integer 0. This is so that key press commands are used once per key press. Next, if an event happened and it was a key press, c is given the value returned by gfx_wait. Then, the pro-
+gram sets variables which hold the fuel amount, the x and y velocities, the x and y positions, and the orientation angle to those of the ship using get methods. Next, a new y position is calculated
+using a kinematic equation which uses the current y position, the current y velocity, and dt (the time factor). A new x position is also calculated but using the x position, x velocity and dt. Next,
+the program checks if the x position is less than -10 or greater than 10 plus the width of the game. If it is, then x is set to 10 or -10 repectively. This allows the ship to wrap around to the other
+side of the screen if it flies off the screen on the left or right. Then, it checks if y is less than -50. If it is then the ship is repositioned to the original spawn point. Next, the program checks
+if the magnitude of the x velocity is greater than 100. If it is, then it is set to -100 or 100 depending on the way the ship is traveling. This lets there be a top horizontal speed. Then, a new y
+velocity is calculated using a kinematic equation which uses the y velocity, dt, and a gravity constant which I set to be 10. The program then calls the ship's accelerate function and passes
+the x and y velocities by reference. Then, the ship's velocities and positions are updated using set methods. Next, if there was a key press, a switch statement is entered which checks the different
+key presses. If the left or right arrow is pressed, the ship's rotate function is called and is passed the angle + PI/14 or the angle plus PI/14 respectively. This rotates the ship. If the up or down
+arrows are pressed, the ship's accelerate change function is called and passed 1 or -1 respectively. If q is pressed, then playing is set to false and state is set to 3, effectively quitting the game.
+Next, the ship's hitbox is updated using ship's hitbox function. Then, collided is assigned the value returned by ship's collision method, which is passed the xPoints and yPoints vectors. Then a switch
+statement is entered which checks the value of collided. If it's 1 (indicating a crash), then playing is set to false, score is increased by 5, the ship's fuel is decreased by 100 units, and a message
+indicating a crash is displayed. The program pauses for a few seconds to allow the user to see the message. If collided is 2 (indicating a potential landing), then multiplier is set to the value re-
+turned by terrain's multiplierCheck method which is passed the ship's x position. Next, it checks if the magnitude of the x velocity was less than 25 and if the y velocity was less than 12. If they are,
+then the ship has a good landing. For a good landing, the ship's fuel is increased by 50 units, the score is increased by the multiplier times 50, and a message is displayed telling the user of the good
+landing. If the first check failed, it then checks if the x velocity was less than 25 and if the y velocity was less than 25. If so, the ship has a hard landing. For a hard landing, the score is in-
+creased by 15 times the multiplier and a message is displayed indicating the hard landing. If both checks failed, then the ship crashed and the same consequences happen as the earlier crash case. Next,
+the screen is cleared using gfx_clear. Then, various statistics, including those about fuel, score, altitude, and velocity, are displayed using gfx_text. Then the terrain and ship both call their re-
+spective draw methods and the output is flushed using gfx_flush. The program then pauses shortly so the user can play the game at a normal speed. Finally, a check is made to see if the ship's fuel is at
+0 or less fuel units. If it is, then the current game ends, and state is set to 1 (to return to the menu state), playing is set to false, and a message telling the user the ship ran out of fuel and that
+the game is over is displayed. Finally, the screen is cleared after leaving the playing loop. Note that because crashing and landing doesn't change state, it lets the program re-enter the playing state
+with the same score and fuel after breaking from the loop. This lets the game continue with a new map with the ship back at the start point.
+
+I verified output for my program by making sure all the key commands did the correct thing in both the menu and playing states and that any other event didn't do anything. I also played the game my-
+self and made sure that landing and crashing worked correctly and that the events that follow crashing or landing were correct (namely score and fuel changes). I also made sure that the added score was
+multiplied correctly when I landed on a multiplier. I made sure that I was able to get both a good landing and a hard landing as well. I verified that running out of fuel ends the game, and I checked
+whether flying off the screen (both on the sides and above) moved the ship to the correct spot. I also made sure that terrain drew the way it was supposed to by making sure that 4 multipliers ap-
+peared every time and flattened out the terrain and that the terrain itself was different every time.
