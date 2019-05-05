@@ -1,5 +1,6 @@
 import math
-import pgzrun
+import pgzero
+#import pgzrun
 
 class Ship:
     def __init__(self):
