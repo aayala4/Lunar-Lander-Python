@@ -1,6 +1,5 @@
 import math
-import pgzero
-#import pgzrun
+import pgzrun
 
 class Ship:
     def __init__(self):
@@ -54,12 +53,12 @@ class Ship:
         self.gas = g
 
     def rotate(self, newAng):
-    	if newAng > 90:
-    		self.ang = 90
-    	elif newAng < -90:
-    		self.ang = -90
-    	else:
-    		self.ang = newAng
+        if newAng > 90:
+            self.ang = 90
+        elif newAng < -90:
+            self.ang = -90
+        else:
+            self.ang = newAng
 
     def setAng(self, angle):
         self.ang = angle
@@ -75,8 +74,8 @@ class Ship:
 
     def accelerate(self, xv, yv):
         xv = xv + .025*self.accMode*math.cos(math.radians(self.ang))
-    	yv = yv + .035*self.accMode*math.sin(math.radians(self.ang))
-    	self.gas = self.gas - .015*self.accMode
+        yv = yv + .035*self.accMode*math.sin(math.radians(self.ang))
+        self.gas = self.gas - .015*self.accMode
         if self.gas < 0:
             self.gas = 0
 
@@ -133,27 +132,27 @@ class Ship:
 
     def hitbox(self):
         self.bodyXPoints.clear()
-    	self.bodyYPoints.clear()
-    	self.leg1XPoints.clear()
-    	self.leg1YPoints.clear()
-    	self.leg2XPoints.clear()
-    	self.leg2YPoints.clear()
-    	self.foot1XPoints.clear()
-    	self.foot1YPoints.clear()
-    	self.foot2XPoints.clear()
-    	self.foot2YPoints.clear()
+        self.bodyYPoints.clear()
+        self.leg1XPoints.clear()
+        self.leg1YPoints.clear()
+        self.leg2XPoints.clear()
+        self.leg2YPoints.clear()
+        self.foot1XPoints.clear()
+        self.foot1YPoints.clear()
+        self.foot2XPoints.clear()
+        self.foot2YPoints.clear()
 
-        for i in frange(0, 2.0*math.pi, 0.25):
+        for i in self.frange(0, 2.0*math.pi, 0.25):
             self.bodyXPoints.append(int(round(self.xpos - 6.0*math.cos(i))))
             self.bodyYPoints.append(int(round(self.ypos - 6.0*math.sin(i))))
 
-        for i in frange(6.0, 11.0, 1):
+        for i in self.frange(6.0, 11.0, 1):
             self.leg1XPoints.append(int(round(self.xpos - i*math.cos(math.radians(self.ang) + (math.pi/6.0)))))
             self.leg1YPoints.append(int(round(self.ypos - i*math.sin(math.radians(self.ang) + (math.pi/6.0)))))
             self.leg2XPoints.append(int(round(self.xpos - i*math.cos(math.radians(self.ang) - (math.pi/6.0)))))
             self.leg2YPoints.append(int(round(self.ypos - i*math.sin(math.radians(self.ang) - (math.pi/6.0)))))
 
-        for i in frange(11.0, 12.0, 1):
+        for i in self.frange(11.0, 12.0, 1):
             self.foot1XPoints.append(int(round(self.xpos - i*math.cos(math.radians(self.ang) + (math.pi/6.0)))))
             self.foot1YPoints.append(int(round(self.ypos - i*math.sin(math.radians(self.ang) + (math.pi/6.0)))))
             self.foot2XPoints.append(int(round(self.xpos - i*math.cos(math.radians(self.ang) - (math.pi/6.0)))))
