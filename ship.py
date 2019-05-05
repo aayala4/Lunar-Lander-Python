@@ -53,10 +53,10 @@ class Ship:
         self.gas = g
 
     def rotate(self, newAng):
-        if newAng > 90:
-            self.ang = 90
-        elif newAng < -90:
-            self.ang = -90
+        if newAng > 0:
+            self.ang = 0
+        elif newAng < -180:
+            self.ang = -180
         else:
             self.ang = newAng
 
