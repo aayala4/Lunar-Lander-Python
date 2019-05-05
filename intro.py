@@ -15,17 +15,22 @@ def update():
 	lander.right += 2
 	if lander.right >= WIDTH:
 		lander.left = 0
+	global ang
+	if keyboard.LEFT:
+		rotate(ang+4)
+	elif keyboard.RIGHT:
+		rotate(ang-4)
 
 def on_mouse_down(pos):
 	if lander.collidepoint(pos):
 		lander.left = 0
 
-def on_key_down(key):
+'''def on_key_down(key):
 	global ang
 	if key.name == 'LEFT':
 		rotate(ang+13)
 	elif key.name == 'RIGHT':
-		rotate(ang-13)
+		rotate(ang-13)'''
 
 def rotate(newAng):
 	global ang
