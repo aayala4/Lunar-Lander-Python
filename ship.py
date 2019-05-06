@@ -1,6 +1,8 @@
 import math
 import pgzrun
 
+PI = 3.1415926
+
 class Ship:
     def __init__(self):
         self.xpos = 0
@@ -21,7 +23,7 @@ class Ship:
         self.bodyXPoints = []
         self.bodyYPoints = []
 
-    def frange(x, y, jump):
+    def frange(self, x, y, jump):
         while x < y:
             yield x
             x += jump
@@ -50,13 +52,16 @@ class Ship:
         return self.gas
 
     def setGas(self, g):
-        self.gas = g
+        if g < 0:
+            self.gas = 0
+        else:
+            self.gas = g
 
     def rotate(self, newAng):
         if newAng > 0:
             self.ang = 0
-        elif newAng < -180:
-            self.ang = -180
+        elif newAng < -PI:
+            self.ang = -PI
         else:
             self.ang = newAng
 
@@ -73,11 +78,12 @@ class Ship:
         return self.accMode
 
     def accelerate(self, xv, yv):
-        xv = xv + .025*self.accMode*math.cos(math.radians(self.ang))
-        yv = yv + .035*self.accMode*math.sin(math.radians(self.ang))
-        self.gas = self.gas - .015*self.accMode
+        xv = xv + .09*self.accMode*math.cos(self.ang)
+        yv = yv + .15*self.accMode*math.sin(self.ang)
+        self.gas = self.gas - .075*self.accMode
         if self.gas < 0:
             self.gas = 0
+        return xv, yv
 
     def accelerateChange(self, modifier):
         self.accMode = self.accMode + modifier
@@ -87,15 +93,15 @@ class Ship:
             self.accMode = 0
 
     def draw(self, screen):
-        screen.draw.line((self.xpos - 6.0*math.cos(math.radians(self.ang) + (math.pi / 6.0)), self.ypos - 6.0*math.sin(math.radians(self.ang) + math.pi / 6.0)),
-            (self.xpos - 12.0*math.cos(math.radians(self.ang) + (math.pi / 6.0)), self.ypos - 12.0*math.sin(math.radians(self.ang) + math.pi / 6.0)), (255, 255, 255))
-        screen.draw.line((self.xpos - 6.0*math.cos(math.radians(self.ang) - (math.pi / 6.0)), self.ypos - 6.0*math.sin(math.radians(self.ang) - math.pi / 6.0)),
-            (self.xpos - 12.0*math.cos(math.radians(self.ang) - (math.pi / 6.0)), self.ypos - 12.0*math.sin(math.radians(self.ang) - math.pi / 6.0)), (255, 255, 255))
+        screen.draw.line((self.xpos - 6.0*math.cos(self.ang + (PI / 6.0)), self.ypos - 6.0*math.sin(self.ang + PI / 6.0)),
+            (self.xpos - 12.0*math.cos(self.ang + (PI / 6.0)), self.ypos - 12.0*math.sin(self.ang + PI / 6.0)), (255, 255, 255))
+        screen.draw.line((self.xpos - 6.0*math.cos(self.ang - (PI / 6.0)), self.ypos - 6.0*math.sin(self.ang - PI / 6.0)),
+            (self.xpos - 12.0*math.cos(self.ang - (PI / 6.0)), self.ypos - 12.0*math.sin(self.ang - PI / 6.0)), (255, 255, 255))
         if self.accMode > 0:
-            screen.draw.line((self.xpos - 6.0*math.cos(math.radians(self.ang) + (math.pi / 6.0)), self.ypos - 6.0*math.sin(math.radians(self.ang) + math.pi / 6.0)),
-                (self.xpos - 6.0*math.cos(math.radians(self.ang)) - (float(self.accMode))*2.0*math.cos(math.radians(self.ang)), self.ypos - 6.0*math.sin(math.radians(self.ang)) -(float(self.accMode))*2.0*math.sin(math.radians(self.ang))), (255, 255, 255))
-            screen.draw.line((self.xpos - 6.0*math.cos(math.radians(self.ang) - (math.pi / 6.0)), self.ypos - 6.0*math.sin(math.radians(self.ang) - math.pi / 6.0)),
-                (self.xpos - 6.0*math.cos(math.radians(self.ang)) - (float(self.accMode))*2.0*math.cos(math.radians(self.ang)), self.ypos - 6.0*math.sin(math.radians(self.ang)) -(float(self.accMode))*2.0*math.sin(math.radians(self.ang))), (255, 255, 255))
+            screen.draw.line((self.xpos - 6.0*math.cos(self.ang + (PI / 6.0)), self.ypos - 6.0*math.sin(self.ang + PI / 6.0)),
+                (self.xpos - 6.0*math.cos(self.ang) - (float(self.accMode))*2.0*math.cos(self.ang), self.ypos - 6.0*math.sin(self.ang) -(float(self.accMode))*2.0*math.sin(self.ang)), (255, 255, 255))
+            screen.draw.line((self.xpos - 6.0*math.cos(self.ang - (PI / 6.0)), self.ypos - 6.0*math.sin(self.ang - PI / 6.0)),
+                (self.xpos - 6.0*math.cos(self.ang) - (float(self.accMode))*2.0*math.cos(self.ang), self.ypos - 6.0*math.sin(self.ang) -(float(self.accMode))*2.0*math.sin(self.ang)), (255, 255, 255))
         screen.draw.circle((self.xpos, self.ypos), 6, (255,255,255))
 
     def collision(self, xt, yt):
@@ -142,18 +148,18 @@ class Ship:
         self.foot2XPoints.clear()
         self.foot2YPoints.clear()
 
-        for i in self.frange(0, 2.0*math.pi, 0.25):
+        for i in self.frange(0, 2.0*PI, 0.25):
             self.bodyXPoints.append(int(round(self.xpos - 6.0*math.cos(i))))
             self.bodyYPoints.append(int(round(self.ypos - 6.0*math.sin(i))))
 
         for i in self.frange(6.0, 11.0, 1):
-            self.leg1XPoints.append(int(round(self.xpos - i*math.cos(math.radians(self.ang) + (math.pi/6.0)))))
-            self.leg1YPoints.append(int(round(self.ypos - i*math.sin(math.radians(self.ang) + (math.pi/6.0)))))
-            self.leg2XPoints.append(int(round(self.xpos - i*math.cos(math.radians(self.ang) - (math.pi/6.0)))))
-            self.leg2YPoints.append(int(round(self.ypos - i*math.sin(math.radians(self.ang) - (math.pi/6.0)))))
+            self.leg1XPoints.append(int(round(self.xpos - i*math.cos(self.ang + (PI/6.0)))))
+            self.leg1YPoints.append(int(round(self.ypos - i*math.sin(self.ang + (PI/6.0)))))
+            self.leg2XPoints.append(int(round(self.xpos - i*math.cos(self.ang - (PI/6.0)))))
+            self.leg2YPoints.append(int(round(self.ypos - i*math.sin(self.ang - (PI/6.0)))))
 
         for i in self.frange(11.0, 12.0, 1):
-            self.foot1XPoints.append(int(round(self.xpos - i*math.cos(math.radians(self.ang) + (math.pi/6.0)))))
-            self.foot1YPoints.append(int(round(self.ypos - i*math.sin(math.radians(self.ang) + (math.pi/6.0)))))
-            self.foot2XPoints.append(int(round(self.xpos - i*math.cos(math.radians(self.ang) - (math.pi/6.0)))))
-            self.foot2YPoints.append(int(round(self.ypos - i*math.sin(math.radians(self.ang) - (math.pi/6.0)))))
+            self.foot1XPoints.append(int(round(self.xpos - i*math.cos(self.ang + (PI/6.0)))))
+            self.foot1YPoints.append(int(round(self.ypos - i*math.sin(self.ang + (PI/6.0)))))
+            self.foot2XPoints.append(int(round(self.xpos - i*math.cos(self.ang - (PI/6.0)))))
+            self.foot2YPoints.append(int(round(self.ypos - i*math.sin(self.ang - (PI/6.0)))))

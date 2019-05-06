@@ -1,161 +1,167 @@
+import random
+
 class Terrain:
-	_x = ()
-	_y = ()
+    def __init__(self):
+        self._x = []
+        self._y = []
 
-	_xm = ()
-	_ym = ()
+        self._xm = []
+        self._ym = []
 
-	_xp = ()
-	_yp = ()
+        self._xp = []
+        self._yp = []
 
-	_multipliersValues = ()
-	_multipliersLengths = ()
-	_multipliersIndexes = ()
-	
-	_xPoints = ()
-	_yPoints = ()
+        self._multipliersValues = []
+        self._multipliersLengths = []
+        self._multipliersIndexes = []
 
-	def midpoint(p1, p2):
-		mid = 0.0
-		mid = (p1+p2)/2
-		return mid
+        self._xPoints = []
 
-	def generate(width, height, displacment, iteration):
-		midx = 0.0
-		midy = 0.0
-	
-		if iteration > 7:
-			multiplierPlace()
-			points()
-			return
+        self._yPoints = []
 
-		if iteration == 1:
-			_x = ()
-			_y = ()
 
-			random.seed()
+    def midpoint(self, p1, p2):
+        mid = (p1 + p2) / 2.
+        return mid
 
-			_x.append(0.0)
-			_x.append(width)
-			_y.append(4.0/5.0*height)
-			_y.append(4.0/5.0*height)
+    def generate(self, width, height, displacement, iteration):
 
-		else:
-			for j in range(len(_x)):
-				i = j+1
-				midx = midpoint(_x[i], _x[i-1])
-				midy = midpoint(_y[i], _y[i-1])
+        if iteration > 7:
+            self.multiplierPlace()
+            self.points()
+            return
 
-				midy += random.uniform(0.0, 1.0)*displacement-displacement/2
+        if iteration == 1:
+            self._x = []
+            self._y = []
 
-				if midy > height-25:
-					midy = height-25
+            random.seed()
 
-				_xm.append(midx)
-				_ym.append(midy)
-			_xp = _x
-			_yp = _y
+            self._x.append(0.0)
+            self._x.append(width)
+            self._y.append(4.0 / 5.0 * height)
+            self._y.append(4.0 / 5.0 * height)
 
-			_x = ()
-			_y = ()
+        else:
+            for j in range(len(self._x)-1):
+                i = j + 1
+                midx = self.midpoint(self._x[i], self._x[i - 1])
+                midy = self.midpoint(self._y[i], self._y[i - 1])
 
-			for j in range(len(_xp)):
-				i = j+1
-				_x.append(_xp[i])
-				_y.append(_xp[i])
+                midy += random.uniform(0.0, 1.0) * displacement - displacement/2.
 
-				if i < len(_xp)-1:
-					_x.append(_xm[i])
-					_y.append(_ym[i])
+                if midy > height - 25:
+                    midy = height - 25
 
-			_xm = ()
-			_ym = ()
-		generate(width, height, displacement/2.0*3.0, iteration+1)
+                self._xm.append(midx)
+                self._ym.append(midy)
+            self._xp = self._x
+            self._yp = self._y
 
-	def draw():
-		multi = ""
-		for j in range(len(_x)):
-			i = j+1
-			draw.line(_x[i-1], _y[i-1], _x[i], _y[i])
-			
-		for i in range(len(_multiplierIndexes)):
-			multi = str(_multipliersValues[i])+"x"
-			draw.line((_x[_multipliersIndexes[i]], _y[_multipliersIndexes[i]]-1), (_x[mulipliersIndexes[i]+multipliersLengths[i]-1], _y[mulipliersIndexes[i]+multipliersLengths[i]-1]-1))
-			draw.line((_x[_multipliersIndexes[i]], _y[_multipliersIndexes[i]]-2), (_x[mulipliersIndexes[i]+multipliersLengths[i]-1], _y[mulipliersIndexes[i]+multipliersLengths[i]-1]-2))
-			draw.text(multi, ((_x[multipliersIndexes[i]]+_x[multipliersIndexes[i]+multipliersLengths[i]-1])/2.0, _y[multipliersIndexes[i]]+20))
+            self._x = []
+            self._y = []
 
-	def points():
-		slope = 0.0
-		yNew = 0.0
-		yPrev = 0.0
-		_xPoints = ()
-		_yPoints = ()
-		
-		for s in range(len(_x)):
-			i = s+1
-			slope = (_y[i] - _y[i-1])/(_x[i]-_x[i-1])
-			yPrev = _y[i-1]
-			for j in range(_x[i-1], _x[i]):
-				yNew = slope+yPrev
-				_xPoints.append(round(j))
-				_yPoints.append(round(yNew))
-				yPrev = yNew
+            for i in range(len(self._xp)):
+                self._x.append(self._xp[i])
+                self._y.append(self._yp[i])
 
-	def getXPoints():
-		return _xPoints
-	
-	def getYPoints():
-		return _yPoints
+                if i < len(self._xp) - 1:
+                    self._x.append(self._xm[i])
+                    self._y.append(self._ym[i])
 
-	def multiplierPlace():
-		length = 0
-		place = 0
-		overlapped = False
-		_multipliersLengths = ()
-		_multipliersIndexes = ()
-		_multipliersValues = ()
-		doWhile = True
+            self._xm = []
+            self._ym = []
+        self.generate(width, height, displacement * 2.0 / 3.0, iteration + 1)
 
-		for i in range(4):
-			length = randint(0, 32767) % 4 + 2
-			place = randint(0,32767) % (len(_x)-4)
-				
-			while doWhile:
-				doWhile = False
-				for k in range(len(_multipliersIndexes)):
-					for l in range(len_multipliersLengths):
-						for m in range(length):
-							if _x[place+m] == _x[multipliersIndexe[k]+l]:
-								doWhile = True
-								length = randint(0, 32767) % 4 +2
-								place = randint(0,32767) % (len(_x)-5)
-								break
-						if (doWhile):
-							break
-					if (doWhile):
-						break
-					
-			if length == 2:
-				multipliersValues.append(5)
+    def draw(self, screen):
+        for j in range(len(self._x)-1):
+            i = j + 1
+            screen.draw.line((self._x[i - 1], self._y[i - 1]), (self._x[i], self._y[i]), (255, 255, 255))
 
-			if length == 3:
-				multipliersValues.append(4)
+        for i in range(len(self._multipliersIndexes)):
+            multi = str(self._multipliersValues[i]) + "x"
+            screen.draw.line((self._x[self._multipliersIndexes[i]], self._y[self._multipliersIndexes[i]] - 1), (
+            self._x[self._multipliersIndexes[i] + self._multipliersLengths[i] - 1],
+            self._y[self._multipliersIndexes[i] + self._multipliersLengths[i] - 1] - 1), (255, 255, 255))
+            screen.draw.line((self._x[self._multipliersIndexes[i]], self._y[self._multipliersIndexes[i]] - 2), (
+            self._x[self._multipliersIndexes[i] + self._multipliersLengths[i] - 1],
+            self._y[self._multipliersIndexes[i] + self._multipliersLengths[i] - 1] - 2), (255, 255, 255))
+            screen.draw.text(multi, ((self._x[self._multipliersIndexes[i]] + self._x[self._multipliersIndexes[i] +
+                                      self._multipliersLengths[i] - 1]) / 2.0, self._y[self._multipliersIndexes[i]] + 20), color="white")
 
-			if length == 4:
-				multipliersValues.append(3)
+    def points(self):
+        self._xPoints = []
+        self._yPoints = []
 
-			if length == 5:
-				multipliersValues.append(2)
+        for s in range(len(self._x)-1):
+            i = s + 1
+            slope = (self._y[i] - self._y[i - 1]) / (self._x[i] - self._x[i - 1])
+            yPrev = self._y[i - 1]
+            working = True
+            j = self._x[i - 1]
+            while working:
+                yNew = slope + yPrev
+                self._xPoints.append(round(j))
+                self._yPoints.append(round(yNew))
+                yPrev = yNew
+                if j < self._x[i]:
+                    j += 1
+                else:
+                    working = False
 
-			mulipliersLengths.append(length)
-			multipliersIndexes.append(place)
+    def getXPoints(self):
+        return self._xPoints
 
-			for j in range(length):
-				_y[place+j] = _y[place]
+    def getYPoints(self):
+        return self._yPoints
 
-	def multiplierCheck(xpos):
-		for i in range(len(multipliersIndexes)):
-			if xpos >= _x[multipliersIndexes[i]] and xpos <= _x[multipliersIndexes[i]+multipliersLength[i]-1]:
-				return multipliersValues[i]
+    def multiplierPlace(self):
+        self._multipliersLengths = []
+        self._multipliersIndexes = []
+        self._multipliersValues = []
 
-		return 1
+        for i in range(4):
+            length = random.randint(0, 32767) % 4 + 2
+            place = random.randint(0, 32767) % (len(self._x) - 4)
+
+            while True:
+                overlapped = False
+                for k in range(len(self._multipliersIndexes)):
+                    for l in range(len(self._multipliersLengths)):
+                        for m in range(length):
+                            if self._x[place + m] == self._x[self._multipliersIndexes[k] + l]:
+                                overlapped = True
+                                length = random.randint(0, 32767) % 4 + 2
+                                place = random.randint(0, 32767) % (len(self._x) - 5)
+                                break
+                        if overlapped:
+                            break
+                    if overlapped:
+                        break
+                if not overlapped:
+                    break
+
+            if length == 2:
+                self._multipliersValues.append(5)
+
+            elif length == 3:
+                self._multipliersValues.append(4)
+
+            elif length == 4:
+                self._multipliersValues.append(3)
+
+            elif length == 5:
+                self._multipliersValues.append(2)
+
+            self._multipliersLengths.append(length)
+            self._multipliersIndexes.append(place)
+
+            for j in range(length):
+                self._y[place + j] = self._y[place]
+
+    def multiplierCheck(self, xpos):
+        for i in range(len(self._multipliersIndexes)):
+            if xpos >= self._x[self._multipliersIndexes[i]] and xpos <= self._x[self._multipliersIndexes[i] + self._multipliersLengths[i] - 1]:
+                return self._multipliersValues[i]
+
+        return 1
