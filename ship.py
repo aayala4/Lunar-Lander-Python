@@ -1,5 +1,4 @@
 import math
-import pgzrun
 
 PI = 3.1415926
 
@@ -79,16 +78,20 @@ class Ship:
 
     def accelerate(self, xv, yv):
         xv = xv + .09*self.accMode*math.cos(self.ang)
-        yv = yv + .15*self.accMode*math.sin(self.ang)
-        self.gas = self.gas - .075*self.accMode
+        yv = yv + .175*self.accMode*math.sin(self.ang)
+        self.gas = self.gas - .08*self.accMode
         if self.gas < 0:
             self.gas = 0
         return xv, yv
 
-    def accelerateChange(self, modifier):
+    def accelerateChange(self, modifier, sounds):
         self.accMode = self.accMode + modifier
+        if self.accMode > 0:
+            sounds.rocket_thrust.play(-1)
         if self.accMode < 0 or self.accMode > 8:
             self.accMode = self.accMode - modifier
+        if self.accMode == 0:
+            sounds.rocket_thrust.stop()
         if self.gas <= 0:
             self.accMode = 0
 
